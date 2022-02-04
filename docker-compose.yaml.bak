@@ -1,4 +1,4 @@
-version: "3.9"
+version: '2.1'
 services:
  transmission:
     volumes:
@@ -25,8 +25,6 @@ services:
         - 8989:8989
         - 8686:8686
         - 5299:5299
-        - 8083:8083
-        - 8090:8090
     restart: always
     container_name: transmission
     image: linuxserver/transmission
@@ -76,33 +74,18 @@ services:
         - '/volume1/Data/media:/downloads'
     restart: unless-stopped
 
- calibre-web:
-    image: linuxserver/calibre-web
+ lidarr:
+    image: linuxserver/lidarr
     network_mode: "service:transmission"
-    container_name: calibre-web
+    container_name: lidarr
     environment:
         - PUID=1026
         - PGID=100
         - TZ=Indian/Maldives
-        - DOCKER_MODS=linuxserver/calibre-web:calibre
-        - OAUTHLIB_RELAX_TOKEN_SCOPE=1
+        - UMASK_SET=022 #optional
     volumes:
-        - /volume1/docker/calibre-web:/config
-        - /volume1/Data/media/library:/books
-    restart: unless-stopped
-
- mylar3:
-    image: linuxserver/mylar3
-    network_mode: "service:transmission"
-    container_name: mylar
-    environment:
-        - PUID=1026
-        - PGID=100
-        - TZ=Indian/Maldives
-    volumes:
-        - /volume1/docker/mylar:/config
-        - /volume1/Data/media/library/comics:/comics
-        - '/volume1/Data/media:/downloads'
+        - /volume1/docker/lidarr:/config
+        - /volume1/Data/media/:/media
     restart: unless-stopped
 
  lazylibrarian:
