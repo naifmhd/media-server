@@ -1,0 +1,108 @@
+version: '2.1'
+services:
+ transmission-openvpn:
+    volumes:
+        - /volume1/Data/downloads:/media/downloads
+        - /etc/localtime:/etc/localtime:ro
+    environment:
+        - PUID=1026
+        - PGID=100
+        - CREATE_TUN_DEVICE=true
+        - OPENVPN_PROVIDER=NORDVPN
+        # - OPENVPN_CONFIG=default
+        - NORDVPN_COUNTRY=US
+        - NORDVPN_CATEGORY=legacy_p2p
+        - NORDVPN_PROTOCOL=udp
+        - OPENVPN_USERNAME=AxU69EyvAHc6K6gNYwDeSKYa
+        - OPENVPN_PASSWORD=DMR9qL645rPNgtc3PgbruHZE
+        - OPENVPN_OPTS=--inactive 3600 --ping 10 --ping-exit 60
+        - WEBPROXY_ENABLED=false
+        - LOCAL_NETWORK=192.168.8.0/24
+        - TRANSMISSION_SCRAPE_PAUSED_TORRENTS_ENABLED=false
+        - DNS=8.8.8.8,8.8.4.4
+    cap_add:
+        - NET_ADMIN
+    logging:
+        driver: json-file
+        options:
+            max-size: 10m
+    ports:
+        - 9091:9091
+        - 9117:9117
+        - 7878:7878
+        - 8989:8989
+        - 8686:8686
+        - 5299:5299
+    restart: always
+    image: haugene/transmission-openvpn
+
+ jackett:
+    image: linuxserver/jackett
+    container_name: jackett
+    network_mode: "service:transmission-openvpn"
+    environment:
+        - PUID=1026
+        - PGID=100
+        - TZ=Indian/Maldives
+        - AUTO_UPDATE=true #optional
+        - RUN_OPTS=#optional
+    volumes:
+        - /volume1/docker/jackett:/config
+        #Jackett only needs config
+    restart: unless-stopped
+
+ radarr:
+    image: linuxserver/radarr
+    network_mode: "service:transmission-openvpn"
+    container_name: radarr
+    environment:
+        - PUID=1026
+        - PGID=100
+        - TZ=Indian/Maldives
+        - UMASK_SET=022 #optional
+    volumes:
+        - /volume1/docker/radarr:/config
+        - /volume1/Data/media:/media
+    restart: unless-stopped
+
+ sonarr:
+    image: linuxserver/sonarr
+    network_mode: "service:transmission-openvpn"
+    container_name: sonarr
+    environment:
+        - PUID=1026
+        - PGID=100
+        - TZ=Indian/Maldives
+        - UMASK_SET=022 #optional
+    volumes:
+        - /volume1/docker/sonarr:/config
+        - /volume1/Data/media/:/media
+    restart: unless-stopped
+
+ lidarr:
+    image: linuxserver/lidarr
+    network_mode: "service:transmission-openvpn"
+    container_name: lidarr
+    environment:
+        - PUID=1026
+        - PGID=100
+        - TZ=Indian/Maldives
+        - UMASK_SET=022 #optional
+    volumes:
+        - /volume1/docker/lidarr:/config
+        - /volume1/Data/media/:/media
+    restart: unless-stopped
+
+ lazylibrarian:
+    image: linuxserver/lazylibrarian
+    network_mode: "service:transmission-openvpn"
+    container_name: lazylibrarian
+    environment:
+        - PUID=1026
+        - PGID=100
+         - TZ=Indian/Maldives
+        #- DOCKER_MODS=linuxserver/calibre-web:calibre #optional
+    volumes:
+        - /volume1/docker/lazylibrarian:/config
+        - /volume1/Data/media/:/media
+    restart: unless-stopped

@@ -1,0 +1,31 @@
+version: '3.3'
+services:
+    transmission-openvpn:
+        cap_add:
+            - NET_ADMIN
+        volumes:
+            - '/volume1/Data/downloads/:/data'
+            - /etc/localtime:/etc/localtime:ro
+        environment:
+            - PUID=1026
+            - PGID=100
+            - CREATE_TUN_DEVICE=true
+            - OPENVPN_PROVIDER=NORDVPN
+            # - OPENVPN_CONFIG=default
+            - NORDVPN_COUNTRY=US
+            - NORDVPN_CATEGORY=legacy_p2p
+            - NORDVPN_PROTOCOL=udp
+            - OPENVPN_USERNAME=AxU69EyvAHc6K6gNYwDeSKYa
+            - OPENVPN_PASSWORD=DMR9qL645rPNgtc3PgbruHZE
+            - OPENVPN_OPTS=--inactive 3600 --ping 10 --ping-exit 60
+            - WEBPROXY_ENABLED=false
+            - LOCAL_NETWORK=192.168.8.0/24
+            - TRANSMISSION_SCRAPE_PAUSED_TORRENTS_ENABLED=false
+            - DNS=8.8.8.8,8.8.4.4
+        logging:
+            driver: json-file
+            options:
+                max-size: 10m
+        ports:
+            - '9091:9091'
+        image: haugene/transmission-openvpn
