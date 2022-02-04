@@ -1,4 +1,4 @@
-version: "3.9"
+version: "2.1"
 services:
  transmission:
     volumes:
@@ -27,6 +27,8 @@ services:
         - 5299:5299
         - 8083:8083
         - 8090:8090
+        - 7080:8080
+        - 7081:8081
     restart: always
     container_name: transmission
     image: linuxserver/transmission
@@ -76,6 +78,19 @@ services:
         - '/volume1/Data/media:/downloads'
     restart: unless-stopped
 
+ calibre:
+    image: linuxserver/calibre
+    network_mode: "service:transmission"
+    container_name: calibre
+    environment:
+        - PUID=1026
+        - PGID=100
+        - TZ=Indian/Maldives
+    volumes:
+        - /volume1/docker/calibre:/config
+        - /volume1/Media/Library/Books:/books
+    restart: unless-stopped
+
  calibre-web:
     image: linuxserver/calibre-web
     network_mode: "service:transmission"
@@ -88,7 +103,7 @@ services:
         - OAUTHLIB_RELAX_TOKEN_SCOPE=1
     volumes:
         - /volume1/docker/calibre-web:/config
-        - /volume1/Data/media/library:/books
+        - /volume1/Media/Library/Books:/books
     restart: unless-stopped
 
  mylar3:
@@ -101,7 +116,7 @@ services:
         - TZ=Indian/Maldives
     volumes:
         - /volume1/docker/mylar:/config
-        - /volume1/Data/media/library/comics:/comics
+        - /volume1/Media/Library/Comics:/comics
         - '/volume1/Data/media:/downloads'
     restart: unless-stopped
 
@@ -117,4 +132,5 @@ services:
     volumes:
         - /volume1/docker/lazylibrarian:/config
         - /volume1/Data/media/:/downloads
+        - /volume1/Media/Library/Books:/books
     restart: unless-stopped
